@@ -10,6 +10,7 @@ st.set_page_config(
     page_title="서울시 카페 상권분석",
     layout="wide"
 )
+st.error("디자인 수정 코드가 실행 중입니다.")
 
 # 한글 폰트
 font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
