@@ -156,20 +156,87 @@ best_gu = recommend.iloc[0]["자치구"]
 # 그래프 함수
 # =========================
 def draw_bar_chart(df, x, y, title, ylabel):
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(df[x], df[y])
+    import numpy as np
+    from matplotlib.patches import FancyBboxPatch
 
-    ax.set_title(title, fontsize=16, fontweight="bold", pad=16)
+    fig, ax = plt.subplots(figsize=(11, 5.8))
+    fig.patch.set_facecolor("#FFFFFF")
+    ax.set_facecolor("#FFFFFF")
+
+    # 값 정렬
+    df = df.copy()
+    values = df[y].values
+    labels = df[x].values
+
+    # 커피톤 그라데이션 색상
+    colors = [
+        "#3E2723", "#4E342E", "#5D4037", "#6D4C41", "#795548",
+        "#8D6E63", "#A1887F", "#BCAAA4", "#D7CCC8", "#EFEBE9"
+    ]
+
+    # 기본 막대는 숨기고, 둥근 막대를 직접 그림
+    bars = ax.bar(labels, values, color="none")
+
+    for i, bar in enumerate(bars):
+        x_pos = bar.get_x()
+        y_pos = 0
+        width = bar.get_width()
+        height = bar.get_height()
+
+        rounded_bar = FancyBboxPatch(
+            (x_pos, y_pos),
+            width,
+            height,
+            boxstyle="round,pad=0.02,rounding_size=0.08",
+            linewidth=0,
+            facecolor=colors[i % len(colors)],
+            alpha=0.95
+        )
+        ax.add_patch(rounded_bar)
+
+        # 막대 위 숫자 표시
+        ax.text(
+            x_pos + width / 2,
+            height + max(values) * 0.015,
+            f"{height:,.0f}",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            fontweight="bold",
+            color="#3E2723"
+        )
+
+    # 제목/축
+    ax.set_title(
+        title,
+        fontsize=18,
+        fontweight="bold",
+        color="#2B2118",
+        pad=22
+    )
+
+    ax.set_ylabel(ylabel, fontsize=11, color="#6F6258")
     ax.set_xlabel("")
-    ax.set_ylabel(ylabel)
 
+    # 축 스타일
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid(axis="y", alpha=0.25)
+    ax.spines["left"].set_color("#E5D8C8")
+    ax.spines["bottom"].set_color("#E5D8C8")
 
-    plt.xticks(rotation=45)
+    ax.tick_params(axis="x", labelsize=10, colors="#4A4038")
+    ax.tick_params(axis="y", labelsize=10, colors="#6F6258")
+
+    plt.xticks(rotation=35, ha="right")
+
+    # 은은한 그리드
+    ax.grid(axis="y", linestyle="--", alpha=0.18)
+    ax.set_axisbelow(True)
+
+    # y축 여백
+    ax.set_ylim(0, max(values) * 1.15)
+
     plt.tight_layout()
-
     st.pyplot(fig)
 
 # =========================
